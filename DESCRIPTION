@@ -6,7 +6,8 @@ Description: What the package does (one paragraph).
 Depends: R
 Imports:
     SimSR,
-    codaTools
+    codaTools,
+    reshape2
 Remotes:
     bstaton1/SimSR,
     bstaton1/codaTools
