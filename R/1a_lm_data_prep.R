@@ -10,7 +10,6 @@
 #'
 #' @export
 
-
 lm_data_prep = function(params, obs) {
 
   output = with(append(params, obs), {
@@ -27,15 +26,15 @@ lm_data_prep = function(params, obs) {
 
     # bundle into a data.frame
     lm_dat = data.frame(log_RPS = as.numeric(log_RPS_ys), S_ys = as.numeric(S_ys_reg), stock = rep(1:ns, each = nrow(S_ys_reg)))
-    lm_dat = lme_dat[!is.na(lme_dat$log_RPS),]
+    lm_dat = lm_dat[!is.na(lm_dat$log_RPS),]
 
     list(
       ns = ns,
-      nobs = nrow(lme_dat),
-      obs_log_RPS_lme = lme_dat$log_RPS,
-      obs_log_RPS_lm = lme_dat$log_RPS,
-      S_obs = lme_dat$S_ys,
-      stock = lme_dat$stock
+      nobs = nrow(lm_dat),
+      obs_log_RPS_lme = lm_dat$log_RPS,
+      obs_log_RPS_lm = lm_dat$log_RPS,
+      S_obs = lm_dat$S_ys,
+      stock = lm_dat$stock
     )
   })
 
