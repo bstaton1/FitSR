@@ -11,10 +11,13 @@
 #' @param file character vector of length 1: optional file name of the saved diagnostic plots.
 #' @param seed a numeric vector of length 1: represents a secondary identifier. Typically would be used to identify the seed.
 #'   To exclude, set to the default: \code{NA}.
+#' @param plot_dir character vector representing the directory or full path to the location
+#'   where you wish to save the plot files, if \code{diag_plots = TRUE}.
+#'   Defaults to \code{NULL}, which will place the files in the working directory.
 #'
 #' @export
 
-ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NULL, seed = NULL) {
+ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NULL, seed = NA, plot_dir) {
 
   # print message
   cat("  Summarizing TSM Model #", model, " Output", "\n", sep = "")
@@ -84,7 +87,7 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
     # combine output
     id = data.frame(
       seed = seed,
-      param = colnames(post_summs),
+      param = stringr::str_remove(colnames(post_summs), "\\[.+\\]"),
       stock = c(rep(1:params$ns, 5),
                 rep(NA, length(colnames(post_summs)) - (params$ns * 5))),
       method = paste("ssm", model, sep = ""),
@@ -101,6 +104,10 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
         file = paste("ssm_", model, "_",
               ifelse(is.na(seed), "", seed),
               "_diag_plots.pdf", sep = "")
+      }
+
+      if (!is.null(plot_dir)) {
+        file = file.path(plot_dir, file)
       }
 
       if ("D_sum" %in% codaTools::get_nodes(post_samps)) {
