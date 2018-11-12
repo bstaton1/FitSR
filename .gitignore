@@ -1,6 +1,7 @@
 .Rproj.user
 .Rhistory
 .RData
-.rds
-.txt
 Dev script.R
+*.rds
+*.txt
+*.pdf
