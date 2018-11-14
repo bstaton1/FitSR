@@ -435,9 +435,9 @@ write_ssm_3_file = function(dir_name = "Model Files", file_name = "ssm_3_model.t
     rho.vec[1] <- 1
     rho.vec[2] <- rho.common
 
-    for (i in 1:vcov.N) {
-      rho_mat[vcov.row[i],vcov.col[i]] <- rho.vec[vcov.ind[i]]
-      Sigma_R[vcov.row[i],vcov.col[i]] <- var.common * rho.vec[vcov.ind[i]]
+    for (i in 1:vcov_N) {
+      rho_mat[vcov_row[i],vcov_col[i]] <- rho.vec[vcov_ind[i]]
+      Sigma_R[vcov_row[i],vcov_col[i]] <- var.common * rho.vec[vcov_ind[i]]
     }
 
     Tau_R[1:ns,1:ns] <- inverse(Sigma_R[1:ns,1:ns])
