@@ -61,7 +61,8 @@ gen_ssm_inits = function(params, obs, n_chains) {
           mu = mean(x, na.rm = T)   # calculate mean when available
           x[is.na(x)] = mu    # fill in NA with the mean
           log(rlnorm(length(x), log(x), 0.2))  # perturb it
-        })
+        }),
+        D_scale = runif(1, 0.08, 0.12)
       )
     }
     inits
