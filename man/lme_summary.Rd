@@ -4,7 +4,8 @@
 \alias{lme_summary}
 \title{Quickly summarize the linear model posteriors}
 \usage{
-lme_summary(post, params, seed = NA, diag_plots = F, plot_dir = NULL)
+lme_summary(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
+  return_post = F)
 }
 \arguments{
 \item{post}{an object of class \code{mcmc.list}}
@@ -21,6 +22,10 @@ Defaults to \code{FALSE}.}
 \item{plot_dir}{character vector representing the directory or full path to the location
 where you wish to save the plot files, if \code{diag_plots = TRUE}.
 Defaults to \code{NULL}, which will place the files in the working directory.}
+
+\item{return_post}{logical. Do you wish to return a list with elements equal to
+\code{$ests} (the standard estimate summary), \code{$post_lm} (the updated mcmc.list object for the
+LM method), and \code{$post_lme} (the updated mcmc.list object for the LME method)?}
 }
 \description{
 Quickly summarize the linear model posteriors

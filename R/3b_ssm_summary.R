@@ -14,10 +14,12 @@
 #' @param plot_dir character vector representing the directory or full path to the location
 #'   where you wish to save the plot files, if \code{diag_plots = TRUE}.
 #'   Defaults to \code{NULL}, which will place the files in the working directory.
+#' @param return_post logical. Do you wish to return a list with elements equal to
+#'   \code{$ests} (the standard estimate summary) and \code{$post} (the updated mcmc.list object)?
 #'
 #' @export
 
-ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NULL, seed = NA, plot_dir) {
+ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NULL, seed = NA, plot_dir = NULL, return_post) {
 
   # print message
   cat("  Summarizing TSM Model #", model, " Output", "\n", sep = "")
@@ -94,7 +96,7 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
       stringsAsFactors = F
     )
 
-    output = cbind(id, t(post_summs))
+    ests = cbind(id, t(post_summs))
 
     # do the diagnostic plot if desired
     if (diag_plots) {
@@ -128,17 +130,26 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
 
   } else {  # if is.null(post)
     # just return a blank df
-    output = data.frame(seed = seed, param = NA, stock = NA,
+    ests = data.frame(seed = seed, param = NA, stock = NA,
                         method = paste("ssm", model, sep = ""), mean = NA, sd = NA,
                         x1 = NA, x2 = NA, x3 = NA)
 
-    colnames(output)[(ncol(output) - 2):ncol(output)] = c("50%", "2.5%", "97.5%")
-    output$bgr = NA
-    output$ess = NA
+    colnames(ests)[(ncol(ests) - 2):ncol(ests)] = c("50%", "2.5%", "97.5%")
+    ests$bgr = NA
+    ests$ess = NA
   }
 
   # remove rownames from summary
-  rownames(output) = NULL
+  rownames(ests) = NULL
+
+  if (return_post) {
+    output = list(
+      post = post_samps,
+      ests = ests
+    )
+  } else {
+    output = ests
+  }
 
   # return outuput
   return(output)

@@ -10,10 +10,13 @@
 #' @param plot_dir character vector representing the directory or full path to the location
 #'   where you wish to save the plot files, if \code{diag_plots = TRUE}.
 #'   Defaults to \code{NULL}, which will place the files in the working directory.
+#' @param return_post logical. Do you wish to return a list with elements equal to
+#'   \code{$ests} (the standard estimate summary), \code{$post_lm} (the updated mcmc.list object for the
+#'   LM method), and \code{$post_lme} (the updated mcmc.list object for the LME method)?
 #'
 #' @export
 
-lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL) {
+lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL, return_post = F) {
 
   # print message
   cat("  Summarizing LME Model Output", "\n", sep = "")
@@ -143,7 +146,7 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL)
     )
 
     # combine
-    output = rbind(
+    ests = rbind(
       cbind(id_lm, t(post_summs_lm)),
       cbind(id_lme, t(post_summs_lme))
     )
@@ -183,19 +186,28 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL)
 
   } else { # if is.null(post)
 
-    output = data.frame(seed = seed, param = NA, stock = NA,
+    ests = data.frame(seed = seed, param = NA, stock = NA,
                         method = c("lm", "lme"), mean = NA, sd = NA,
                         x1 = NA, x2 = NA, x3 = NA)
 
-    colnames(output)[(ncol(output) - 2):ncol(output)] = c("50%", "2.5%", "97.5%")
-    output$bgr = NA
-    output$ess = NA
+    colnames(ests)[(ncol(ests) - 2):ncol(ests)] = c("50%", "2.5%", "97.5%")
+    ests$bgr = NA
+    ests$ess = NA
   }
 
   # remove rownames from summary
-  rownames(output) = NULL
+  rownames(ests) = NULL
 
-  # return outuput
+  if (return_post) {
+    output = list(
+      post_lm = post_samps_lm,
+      post_lme = post_samps_lme,
+      ests = ests
+    )
+  } else {
+    output = ests
+  }
+
+  # return output
   return(output)
-
 }
