@@ -14,8 +14,8 @@ lm_data_prep = function(params, obs) {
 
   output = with(append(params, obs), {
     # brood year indices
-    S_ind = 1:(nt - a_max - 1)
-    R_ind = (a_max + 1):(ny - na)
+    S_ind = 1:(nt - a_max)
+    R_ind = (a_max + 1):(ny - na + 1)
 
     # indices for brood years to use
     S_ys_reg = S_ts_obs[S_ind,]
