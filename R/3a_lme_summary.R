@@ -156,12 +156,12 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
     if (diag_plots) {
 
 
-      file_lm = paste("lm_", "_",
-                      ifelse(is.na(seed), "", seed),
-                      "_diag_plots.pdf", sep = "")
-      file_lme = paste("lme_", "_",
-                      ifelse(is.na(seed), "", seed),
-                      "_diag_plots.pdf", sep = "")
+      file_lm = paste("lm", "_",
+                      ifelse(is.na(seed), "", paste(seed, "_", sep = "")),
+                      "diag_plots.pdf", sep = "")
+      file_lme = paste("lme", "_",
+                      ifelse(is.na(seed), "", paste(seed, "_", sep = "")),
+                      "diag_plots.pdf", sep = "")
 
       if (!is.null(plot_dir)) {
         file_lm = file.path(plot_dir, file_lm)
