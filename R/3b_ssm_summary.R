@@ -22,7 +22,7 @@
 ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NULL, seed = NA, plot_dir = NULL, return_post = F) {
 
   # print message
-  cat("  Summarizing TSM Model #", model, " Output", "\n", sep = "")
+  cat("  Summarizing SSM Model #", model, " Output", "\n", sep = "")
 
   # check if post is NULL. if TRUE, that means JAGS crashed.
   if (!is.null(post)) {
