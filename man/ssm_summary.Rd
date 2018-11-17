@@ -5,7 +5,7 @@
 \title{Quickly summarize the state-space model posteriors}
 \usage{
 ssm_summary(post, params, model, maturity, diag_plots = F, file = NULL,
-  seed = NA, plot_dir = NULL, return_post)
+  seed = NA, plot_dir = NULL, return_post = F)
 }
 \arguments{
 \item{post}{an object of class \code{mcmc.list}}
@@ -31,7 +31,8 @@ where you wish to save the plot files, if \code{diag_plots = TRUE}.
 Defaults to \code{NULL}, which will place the files in the working directory.}
 
 \item{return_post}{logical. Do you wish to return a list with elements equal to
-\code{$ests} (the standard estimate summary) and \code{$post} (the updated mcmc.list object)?}
+\code{$ests} (the standard estimate summary) and \code{$post} (the updated mcmc.list object)?
+Defaults to \code{FALSE}.}
 }
 \description{
 Quickly summarize the state-space model posteriors

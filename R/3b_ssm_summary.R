@@ -16,10 +16,10 @@
 #'   Defaults to \code{NULL}, which will place the files in the working directory.
 #' @param return_post logical. Do you wish to return a list with elements equal to
 #'   \code{$ests} (the standard estimate summary) and \code{$post} (the updated mcmc.list object)?
-#'
+#'   Defaults to \code{FALSE}.
 #' @export
 
-ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NULL, seed = NA, plot_dir = NULL, return_post) {
+ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NULL, seed = NA, plot_dir = NULL, return_post = F) {
 
   # print message
   cat("  Summarizing TSM Model #", model, " Output", "\n", sep = "")

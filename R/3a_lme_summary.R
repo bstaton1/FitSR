@@ -13,6 +13,7 @@
 #' @param return_post logical. Do you wish to return a list with elements equal to
 #'   \code{$ests} (the standard estimate summary), \code{$post_lm} (the updated mcmc.list object for the
 #'   LM method), and \code{$post_lme} (the updated mcmc.list object for the LME method)?
+#'   Defaults to \code{FALSE}.
 #'
 #' @export
 
