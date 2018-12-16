@@ -1,6 +1,6 @@
 Package: FitSR
 Title: Functions to Fit and Summarize SRA Models
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: person("Benjamin", "staton", email = "statonbe@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends: R

@@ -28,7 +28,7 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
   if (!is.null(post)) {
 
     # base parameters to extract
-    p = c("alpha", "beta", "U_msy", "S_msy", "sigma_R", "pi", "phi")
+    p = c("alpha", "beta", "U_msy", "S_msy", "sigma_R", "pi", "phi", "R", "^S\\[", "C_tot", "^U\\[")
 
     # add on "D_sum" doing complex maturity
     if (maturity == "complex") p = c(p, "D_sum")
@@ -54,8 +54,8 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
     S_names = paste("S_msy[", 1:params$ns, "]", sep = "")
 
     n_samp = length(mean_sigma_R_post)
-    mgmt_post = matrix(NA, n_samp, 4)
-    colnames(mgmt_post) = c("S_obj", "U_obj", "S_MSY", "U_MSY")
+    mgmt_post = matrix(NA, n_samp, 8)
+    colnames(mgmt_post) = c("Sstar_0.1", "Sstar_0.3", "Sstar_0.5", "Ustar_0.1", "Ustar_0.3", "Ustar_0.5", "S_MSY", "U_MSY")
     for (i in 1:n_samp) {
       mgmt_post[i,] = SimSR::gen_mgmt(
         params = list(
@@ -64,7 +64,6 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
           U_msy = post_samps[i,U_names],
           S_msy = post_samps[i,S_names],
           U_range = seq(0,1,0.01),
-          max_p_overfished = params$max_p_overfished,
           ns = params$ns)
       )$mgmt
     }
@@ -90,11 +89,24 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
     id = data.frame(
       seed = seed,
       param = stringr::str_remove(colnames(post_summs), "\\[.+\\]"),
-      stock = c(rep(1:params$ns, 5),
-                rep(NA, length(colnames(post_summs)) - (params$ns * 5))),
-      method = paste("ssm", model, sep = ""),
       stringsAsFactors = F
     )
+    id$stock = NA
+    id$stock[id$param == "alpha"] = 1:params$ns
+    id$stock[id$param == "beta"] = 1:params$ns
+    id$stock[id$param == "U_msy"] = 1:params$ns
+    id$stock[id$param == "S_msy"] = 1:params$ns
+    id$stock[id$param == "sigma_R"] = 1:params$ns
+    id$stock[id$param == "R"] = rep(1:params$ns, each = params$ny)
+    id$stock[id$param == "S"] = rep(1:params$ns, each = params$nt)
+
+    id$year = NA
+    id$year[id$param == "R"] = rep(1:params$ny, params$ns)
+    id$year[id$param == "S"] = rep(1:params$nt, params$ns)
+    id$year[id$param == "C_tot"] = 1:params$nt
+    id$year[id$param == "U"] = 1:params$nt
+
+    id$method = paste("ssm", model, sep = "")
 
     ests = cbind(id, t(post_summs))
 
@@ -130,7 +142,7 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
 
   } else {  # if is.null(post)
     # just return a blank df
-    ests = data.frame(seed = seed, param = NA, stock = NA,
+    ests = data.frame(seed = seed, param = NA, stock = NA, year = NA,
                         method = paste("ssm", model, sep = ""), mean = NA, sd = NA,
                         x1 = NA, x2 = NA, x3 = NA)
 

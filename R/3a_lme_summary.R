@@ -69,8 +69,8 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
     }
 
     # calculate drainage-wide reference points
-    mgmt_post_lm = mgmt_post_lme = matrix(NA, n_samp, 4)
-    colnames(mgmt_post_lm) = colnames(mgmt_post_lme) = c("S_obj", "U_obj", "S_MSY", "U_MSY")
+    mgmt_post_lm = mgmt_post_lme = matrix(NA, n_samp, 8)
+    colnames(mgmt_post_lm) = colnames(mgmt_post_lme) = c("Sstar_0.1", "Sstar_0.3", "Sstar_0.5", "Ustar_0.1", "Ustar_0.3", "Ustar_0.5", "S_MSY", "U_MSY")
     for (i in 1:n_samp) {
       mgmt_post_lm[i,] = SimSR::gen_mgmt(
         params = list(
@@ -79,7 +79,6 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
           U_msy = U_msy_post_lm[i,],
           S_msy = S_msy_post_lm[i,],
           U_range = seq(0,1,0.01),
-          max_p_overfished = params$max_p_overfished,
           ns = ns)
       )$mgmt
 
@@ -90,7 +89,6 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
           U_msy = U_msy_post_lme[i,],
           S_msy = S_msy_post_lme[i,],
           U_range = seq(0,1,0.01),
-          max_p_overfished = params$max_p_overfished,
           ns = ns)
       )$mgmt
     }
@@ -132,7 +130,7 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
       seed = seed,
       param = stringr::str_remove(colnames(post_summs_lm), "\\_lm\\[.+\\]"),
       stock = c(rep(1:ns, 4),
-                rep(NA, 4)),
+                rep(NA, 8)),
       method = "lm",
       stringsAsFactors = F
     )
@@ -141,7 +139,7 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
       seed = seed,
       param = stringr::str_remove(colnames(post_summs_lme), "\\_lme\\[.+\\]"),
       stock = c(rep(1:ns, 4),
-                rep(NA, 4)),
+                rep(NA, 8)),
       method = "lme",
       stringsAsFactors = F
     )
@@ -171,7 +169,7 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
       codaTools::diag_plots(
         post = post_samps_lm,
         p = c("alpha_lm", "beta_lm", "U_msy_lm" ,"S_msy_lm",
-              "U_obj", "S_obj", "S_MSY", "U_MSY"),
+              "S_MSY", "U_MSY"),
         save = T,
         file = file_lm
       )
@@ -179,7 +177,7 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
       codaTools::diag_plots(
         post = post_samps_lme,
         p = c("alpha_lme", "beta_lme", "U_msy_lme" ,"S_msy_lme",
-              "U_obj", "S_obj", "S_MSY", "U_MSY"),
+              "S_MSY", "U_MSY"),
         save = T,
         file = file_lme
       )
