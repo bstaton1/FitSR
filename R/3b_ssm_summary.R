@@ -79,9 +79,11 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
     post_samps = codaTools::matrix2mcmclist(post_samps)
 
     # extract posterior summaries
+    newp = paste("^", codaTools::get_nodes(post_samps), sep = "")
+    newp = ifelse(newp %in% c("^R", "^S", "^U"), paste(newp, "\\[", sep = ""), newp)
     post_summs = codaTools::summ_post(
       post = post_samps,
-      p = paste("^", codaTools::get_nodes(post_samps), sep = ""),
+      p = newp,
       ess = T, bgr = T
     )
 
