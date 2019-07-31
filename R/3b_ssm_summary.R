@@ -4,8 +4,6 @@
 #' @param params a list object created by \code{SimFit::init_sim()} or \code{kusko_data_prep()$params}.
 #'   Contains the driving parameters and dimensional variables.
 #' @param model the model identifier: e.g., a number or letter
-#' @param maturity character vector of length 1: does the model have \code{"simple"} or \code{"complex"}
-#'   maturity schedules? The extracted parameters depends on this
 #' @param diag_plots logical. Do you wish to save traceplots and density plots for convergence diagnostics?
 #'   Defaults to \code{FALSE}.
 #' @param file character vector of length 1: optional file name of the saved diagnostic plots.
@@ -19,7 +17,7 @@
 #'   Defaults to \code{FALSE}.
 #' @export
 
-ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NULL, seed = NA, plot_dir = NULL, return_post = F) {
+ssm_summary = function(post, params, model, diag_plots = F, file = NULL, seed = NA, plot_dir = NULL, return_post = F) {
 
   # print message
   cat("  Summarizing SSM Model #", model, " Output", "\n", sep = "")
@@ -31,20 +29,20 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
     p = c("alpha", "beta", "U_msy", "S_msy", "sigma_R", "pi", "phi", "R", "^S\\[", "C_tot", "^U\\[")
 
     # add on "D_sum" doing complex maturity
-    if (maturity == "complex") p = c(p, "D_sum")
+    if ("D_sum" %in% postpack::get_p(post)) p = c(p, "D_sum")
 
     # extract base posterior samples for parameters in all models
-    post_samps = codaTools::filter_post(
-      post = post, p = p, format = "matrix", chains = T, iters = T
+    post_samps = postpack::post_subset(
+      post = post, p = p, matrix = T, chains = T, iters = T
     )
 
     # get mean rho posterior
-    rho_mat_post = codaTools::filter_post(post, "rho_mat", format = "matrix")
+    rho_mat_post = postpack::post_subset(post, "rho_mat", matrix = T)
     diag_names = paste("rho_mat[", 1:params$ns, ",", 1:params$ns, "]", sep = "")
     mean_rho_post = apply(rho_mat_post[,-which(colnames(rho_mat_post) %in% diag_names)], 1, mean)
 
     # get mean sigma R posterior
-    sigma_R_post = codaTools::filter_post(post, p = "sigma_R", format = "matrix")
+    sigma_R_post = postpack::post_subset(post, p = "sigma_R", matrix = T)
     mean_sigma_R_post = apply(sigma_R_post, 1, mean)
 
     # calculate drainage-wide reference points for each mcmc iteration
@@ -76,15 +74,15 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
       mgmt_post)
 
     # coerce to mcmc.list
-    post_samps = codaTools::matrix2mcmclist(post_samps)
+    post_samps = postpack::matrix2mcmclist(post_samps)
 
     # extract posterior summaries
-    newp = paste("^", codaTools::get_nodes(post_samps), sep = "")
+    newp = paste("^", postpack::get_p(post_samps), sep = "")
     newp = ifelse(newp %in% c("^R", "^S", "^U"), paste(newp, "\\[", sep = ""), newp)
-    post_summs = codaTools::summ_post(
+    post_summs = postpack::post_summ(
       post = post_samps,
       p = newp,
-      ess = T, bgr = T
+      ess = T, Rhat = T
     )
 
     # combine output
@@ -126,19 +124,20 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
         file = file.path(plot_dir, file)
       }
 
-      if ("D_sum" %in% codaTools::get_nodes(post_samps)) {
+      if ("D_sum" %in% postpack::get_p(post_samps)) {
         inc_D_sum = "D_sum"
       } else {
         inc_D_sum = NULL
       }
 
-      codaTools::diag_plots(
+      # note: the thinning - this only takes effect for plotting the trace plot. See ?diag_plots
+      postpack::diag_plots(
         post = post_samps,
         p = c("U_MSY", "S_MSY", "mean_sigma_R",
               "mean_rho", "phi", inc_D_sum,
               "alpha", "beta", "U_msy", "S_msy"),
         save = T,
-        file = file
+        file = file, thin_percent = 0.8
       )
     }
 
@@ -149,7 +148,7 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
                         x1 = NA, x2 = NA, x3 = NA)
 
     colnames(ests)[(ncol(ests) - 2):ncol(ests)] = c("50%", "2.5%", "97.5%")
-    ests$bgr = NA
+    ests$Rhat = NA
     ests$ess = NA
   }
 
@@ -167,5 +166,4 @@ ssm_summary = function(post, params, model, maturity, diag_plots = F, file = NUL
 
   # return outuput
   return(output)
-
 }

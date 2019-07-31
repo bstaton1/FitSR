@@ -4,7 +4,7 @@
 \alias{ssm_summary}
 \title{Quickly summarize the state-space model posteriors}
 \usage{
-ssm_summary(post, params, model, maturity, diag_plots = F, file = NULL,
+ssm_summary(post, params, model, diag_plots = F, file = NULL,
   seed = NA, plot_dir = NULL, return_post = F)
 }
 \arguments{
@@ -14,9 +14,6 @@ ssm_summary(post, params, model, maturity, diag_plots = F, file = NULL,
 Contains the driving parameters and dimensional variables.}
 
 \item{model}{the model identifier: e.g., a number or letter}
-
-\item{maturity}{character vector of length 1: does the model have \code{"simple"} or \code{"complex"}
-maturity schedules? The extracted parameters depends on this}
 
 \item{diag_plots}{logical. Do you wish to save traceplots and density plots for convergence diagnostics?
 Defaults to \code{FALSE}.}
