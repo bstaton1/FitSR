@@ -4,18 +4,25 @@
 \alias{kusko_prep}
 \title{Prepare the Kuskokwim Substock Data for this analysis}
 \usage{
-kusko_prep(S_dat, H_dat, age_dat)
+kusko_prep(S_dat, H_dat, age_dat, v = NULL, ESSmax = NULL)
 }
 \arguments{
-\item{S_dat}{the output file for substock spawner abundance}
+\item{S_dat}{the contents of the data file containing substock spawner abundance}
 
-\item{H_dat}{the output file for drainage-wide
-aggregate harvest summed across all substocks}
+\item{H_dat}{the contents of the data file containing aggregate harvest}
 
-\item{age_dat}{the output file for substock-specific age composition data
-for substocks that have these data}
+\item{age_dat}{the contents of the data file containing age composition data}
+
+\item{v}{a vector of relative vulnerabilities to harvest for each substock.
+Defaults to \code{NULL}, which results in all substocks being equally vulnerable to harvest}
+
+\item{ESSmax}{a numeric vector of length 1. If you wish to rescale the effective sample size of
+the age composition data such that the year with the maximum number of fish aged takes on a
+fixed number, and all other years are scaled proportionately to that number, specify that number
+here. If left at the default value of \code{NULL}, then the multinomial effective sample size
+will be equal to the number of fish successfully aged each year.}
 }
 \description{
-Prepare the output data files from the GitHub repository: bstaton1/kusko-multi-sra
+Convert the data files from preparing the Kuskokwim River substock data
 into the format needed by the functions in the \code{FitSR} package.
 }

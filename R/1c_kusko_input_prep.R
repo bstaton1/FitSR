@@ -1,18 +1,21 @@
 #' Prepare the Kuskokwim Substock Data for this analysis
 #'
-#' Prepare the output data files from the GitHub repository: bstaton1/kusko-multi-sra
+#' Convert the data files from preparing the Kuskokwim River substock data
 #' into the format needed by the functions in the \code{FitSR} package.
 #'
-#' @param S_dat the output file for substock spawner abundance
-#' @param H_dat the output file for drainage-wide
-#'   aggregate harvest summed across all substocks
-#' @param age_dat the output file for substock-specific age composition data
-#'   for substocks that have these data
-#'
+#' @param S_dat the contents of the data file containing substock spawner abundance
+#' @param H_dat the contents of the data file containing aggregate harvest
+#' @param age_dat the contents of the data file containing age composition data
+#' @param v a vector of relative vulnerabilities to harvest for each substock.
+#'   Defaults to \code{NULL}, which results in all substocks being equally vulnerable to harvest
+#' @param ESSmax a numeric vector of length 1. If you wish to rescale the effective sample size of
+#'   the age composition data such that the year with the maximum number of fish aged takes on a
+#'   fixed number, and all other years are scaled proportionately to that number, specify that number
+#'   here. If left at the default value of \code{NULL}, then the multinomial effective sample size
+#'   will be equal to the number of fish successfully aged each year.
 #' @export
 
-# arguments are the raw output files in the data-prep directories
-kusko_prep = function(S_dat, H_dat, age_dat) {
+kusko_prep = function(S_dat, H_dat, age_dat, v = NULL, ESSmax = NULL) {
 
   ### HANDLE THE ESCAPEMENT DATA ###
   # get total escapement each year from stocks in this analysis: used in getting U
@@ -42,8 +45,7 @@ kusko_prep = function(S_dat, H_dat, age_dat) {
   U_t_obs = C_tot_t_obs/(S_tot_t_obs + C_tot_t_obs)
 
   ### SET VULNERABILITY ###
-  region = c("mid", "mid", "mid", "mid", "lwr", "mid", "lwr", "mid", "upr", "mid", "upr", "upr", "lwr")
-  v = ifelse(region == "lwr" | region == "mid", 0.95, 1)
+  if (is.null(v)) v = rep(1, ns)
 
   # age dimensions
   a_min = 4
@@ -63,7 +65,20 @@ kusko_prep = function(S_dat, H_dat, age_dat) {
     x_tas_obs[,,j] = as.matrix(age_dat[age_dat$stock == stocks[age_stocks[j]],paste("a", a_min:a_max, sep = "")])
   }
   dimnames(x_tas_obs) = list(years, paste("a", a_min:a_max, sep = ""), stocks[age_stocks])
-  ESS_ts = apply(x_tas_obs, 3, rowSums)
+
+  if (!is.null(ESSmax)) {
+    ESS_ts = apply(x_tas_obs, 3, rowSums)
+    p_tas_obs = x_tas_obs_new = x_tas_obs
+    ESS_ts_new = round(apply(ESS_ts, 2, function(x) x/max(x, na.rm = T)) * ESSmax)
+
+    for (s in 1:dim(x_tas_obs)[3]) {
+      for (t in 1:dim(x_tas_obs)[1]) {
+        p_tas_obs[t,,s] = x_tas_obs[t,,s]/sum(x_tas_obs[t,,s])
+        x_tas_obs_new[t,,s] = round(p_tas_obs[t,,s] * ESS_ts_new[t,s])
+      }
+    }
+    x_tas_obs = x_tas_obs_new
+  }
 
   obs = list(
     C_tot_t_obs = C_tot_t_obs,
