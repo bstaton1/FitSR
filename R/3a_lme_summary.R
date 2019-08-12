@@ -29,12 +29,12 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
     p = c("alpha", "beta")
 
     # extract base posterior samples
-    post_samps_lm = codaTools::filter_post(
-      post = post, p = paste(p, "lm[", sep = "_"), format = "matrix", chains = T, iters = T
+    post_samps_lm = postpack::post_subset(
+      post = post, p = paste(p, "lm[", sep = "_"), matrix = T, chains = T, iters = T
     )
 
-    post_samps_lme = codaTools::filter_post(
-      post = post, p = paste(p, "lme[", sep = "_"), format = "matrix", chains = T, iters = T
+    post_samps_lme = postpack::post_subset(
+      post = post, p = paste(p, "lme[", sep = "_"), matrix = T, chains = T, iters = T
     )
 
     # number of stocks
@@ -109,20 +109,20 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
     )
 
     # coerce to mcmc.list
-    post_samps_lm = codaTools::matrix2mcmclist(post_samps_lm)
-    post_samps_lme = codaTools::matrix2mcmclist(post_samps_lme)
+    post_samps_lm = postpack::matrix2mcmclist(post_samps_lm)
+    post_samps_lme = postpack::matrix2mcmclist(post_samps_lme)
 
     # extract posterior summaries
-    post_summs_lm = codaTools::summ_post(
+    post_summs_lm = postpack::post_summ(
       post = post_samps_lm,
-      p = paste("^", codaTools::get_nodes(post_samps_lm), sep = ""),
-      ess = T, bgr = T
+      p = paste("^", postpack::get_p(post_samps_lm), sep = ""),
+      ess = T, Rhat = T
     )
 
-    post_summs_lme = codaTools::summ_post(
+    post_summs_lme = postpack::post_summ(
       post = post_samps_lme,
-      p = paste("^", codaTools::get_nodes(post_samps_lme), sep = ""),
-      ess = T, bgr = T
+      p = paste("^", postpack::get_p(post_samps_lme), sep = ""),
+      ess = T, Rhat = T
     )
 
     # create the "id variables" for each output model
@@ -166,7 +166,7 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
         file_lme = file.path(plot_dir, file_lme)
       }
 
-      codaTools::diag_plots(
+      postpack::diag_plots(
         post = post_samps_lm,
         p = c("alpha_lm", "beta_lm", "U_msy_lm" ,"S_msy_lm",
               "S_MSY", "U_MSY"),
@@ -174,7 +174,7 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
         file = file_lm
       )
 
-      codaTools::diag_plots(
+      postpack::diag_plots(
         post = post_samps_lme,
         p = c("alpha_lme", "beta_lme", "U_msy_lme" ,"S_msy_lme",
               "S_MSY", "U_MSY"),
@@ -190,7 +190,7 @@ lme_summary = function(post, params, seed = NA, diag_plots = F, plot_dir = NULL,
                         x1 = NA, x2 = NA, x3 = NA)
 
     colnames(ests)[(ncol(ests) - 2):ncol(ests)] = c("50%", "2.5%", "97.5%")
-    ests$bgr = NA
+    ests$Rhat = NA
     ests$ess = NA
   }
 
