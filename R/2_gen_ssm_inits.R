@@ -7,12 +7,15 @@
 #'   Contains the driving parameters and dimensional variables.
 #' @param obs a list object created by the functions that generate observations in the
 #'   \code{SimFit} package or the \code{kusko_data_prep()$obs} function.
+#' @param maturity a character vector of length 1: either \code{"simple"} or \code{"complex"}.
+#'   If the latter, then initial values will be generated for the dispersion parameter of the
+#'   Dirichlet distribution that generates brood year specific maturation schedules.
 #' @param n_chains a numeric vector of length 1: the number of MCMC chains
 #'   to generate initial values for
 #'
 #' @export
 
-gen_ssm_inits = function(params, obs, n_chains) {
+gen_ssm_inits = function(params, obs, maturity, n_chains) {
 
   output = with(append(params, obs), {
     # fit a basic regression approach to get Umsy and Smsy for each substock
@@ -61,9 +64,9 @@ gen_ssm_inits = function(params, obs, n_chains) {
           mu = mean(x, na.rm = T)   # calculate mean when available
           x[is.na(x)] = mu    # fill in NA with the mean
           log(rlnorm(length(x), log(x), 0.2))  # perturb it
-        }),
-        D_scale = runif(1, 0.08, 0.12)
+        })
       )
+      if (maturity == "complex") inits[[i]] = append(inits[[i]], list(D_scale = runif(1, 0.08, 0.12)))
     }
     inits
   })

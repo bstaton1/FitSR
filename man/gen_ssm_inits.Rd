@@ -4,7 +4,7 @@
 \alias{gen_ssm_inits}
 \title{Generate initial values for a state-space SRA fit}
 \usage{
-gen_ssm_inits(params, obs, n_chains)
+gen_ssm_inits(params, obs, maturity, n_chains)
 }
 \arguments{
 \item{params}{a list object created by \code{SimFit::init_sim()} or \code{kusko_data_prep()$params}.
@@ -12,6 +12,10 @@ Contains the driving parameters and dimensional variables.}
 
 \item{obs}{a list object created by the functions that generate observations in the
 \code{SimFit} package or the \code{kusko_data_prep()$obs} function.}
+
+\item{maturity}{a character vector of length 1: either \code{"simple"} or \code{"complex"}.
+If the latter, then initial values will be generated for the dispersion parameter of the
+Dirichlet distribution that generates brood year specific maturation schedules.}
 
 \item{n_chains}{a numeric vector of length 1: the number of MCMC chains
 to generate initial values for}
